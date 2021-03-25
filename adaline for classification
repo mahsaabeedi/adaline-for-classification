@@ -1,0 +1,77 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from pylab import *
+x_1=np.random.normal(2,0.5,100)
+x_1=x_1.reshape(100,1) 
+
+y_1=np.random.normal(0,0.2,100)
+y_1=y_1.reshape(100,1)
+
+Q_1 = np.concatenate((x_1,y_1),axis=1)
+Q_1=Q_1.reshape(100,2)
+
+x_2=np.random.normal(0,0.1,30)
+x_2=x_2.reshape(30,1)
+y_2=np.random.normal(1,0.7,30)
+y_2=y_2.reshape(30,1)
+Q_2 = np.concatenate((x_2,y_2),axis=1)
+Q_2=Q_2.reshape(30,2)
+Q = np.concatenate((Q_1,Q_2),axis=0)
+Q=Q.reshape(130,2)
+#print(Q)
+w1=0
+w2=0
+alpha=0.01
+tresh=0.4
+finish=0
+b=0
+
+cost_function_list=np.zeros((130,1))
+for k in range(100):
+    j1=0
+    x=0
+    if finish!=1:
+        for i in range(130):
+            net=Q[(i,0)]*w1+Q[(i,1)]*w2+b
+            #print(net)
+            #print(net)
+            if net>=0:
+                 h=1
+            else:
+                 h=-1
+            #print(h)
+            if i<100:
+                w1=w1+(alpha*(1-net)*Q[(i,0)])
+                w2=w2+(alpha*(1-net)*Q[(i,1)])
+                b=b+alpha*(1-net)
+                j=0.5*((1-net)**2)
+            else:
+                w1=w1+alpha*((-1-net)*Q[(i,0)])
+                w2=w2+alpha*((-1-net)*Q[(i,1)])
+                b=b+alpha*(-1-net)
+                j=0.5*((-1-net)**2)
+            #print(j)
+            #net = np.linspace(-10,10)
+            cost_function_list[i]=j
+            j1=j+j1
+            #print(j1)
+            if i==129:
+                print(j1)
+            if j<tresh:
+                 x=x+1
+                 if x==129:
+                      finish=1
+                      print("finish")
+                      print("epoch:",k+1)
+                      print("w1:",w1)
+                      print("w2:",w2)
+                      print("b:",b)
+
+                      plt.figure()
+                      ax1=plt.subplot(2,1,1)
+                      x = np.linspace(-1,3)
+                      plt.plot(x,((-w1*x-b)/w2))
+                      plt.scatter(x_1,y_1,s=100,marker='*',color='red')
+                      plt.scatter(x_2,y_2,s=30,marker='*',color='blue')
+                      ax1.plot()
+                      plt.show()
